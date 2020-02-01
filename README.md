@@ -2,9 +2,9 @@
 Multithreaded GUI applicaiton
 
 ## Tools
-[Visual Studio Code](https://code.visualstudio.com/Download)</br>
-[anaconda - 4.7.X](https://www.anaconda.com/distribution/)</br>
-[python - 3.7.X 64-bit](https://www.python.org/downloads/)</br>
+[Visual Studio Code - 1.x](https://code.visualstudio.com/Download)</br>
+[anaconda - 4.7.x](https://www.anaconda.com/distribution/)</br>
+[python - 3.7.x 64-bit](https://www.python.org/downloads/)</br></br>
 **NOTE:** Python does not need to be installed separately, it is packaged with the anaconda install.
 
 ## SHOUTOUTS!
