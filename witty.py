@@ -1,6 +1,6 @@
 import sys
 import sys
-from PyQt5 import QtWidgets,QtCore
+from PyQt5 import QtWidgets,QtCore,QtGui
 
 class WittyGui(QtWidgets.QMainWindow):
     '''
@@ -26,8 +26,10 @@ class WittyGui(QtWidgets.QMainWindow):
         Create the line and text edits
         '''
         fileName    = QtWidgets.QLineEdit()
-        xRunNumber  = QtWidgets.QLineEdit()
-        yRunNumber  = QtWidgets.QLineEdit()
+        xRunNumber  = QtWidgets.QSpinBox()
+        xRunNumber.setRange(0,200)
+        yRunNumber  = QtWidgets.QSpinBox()
+        yRunNumber.setRange(0,200)
         notes       = QtWidgets.QTextEdit()
 
         '''
@@ -54,17 +56,17 @@ class WittyGui(QtWidgets.QMainWindow):
         grid.addWidget(QtWidgets.QLabel("Date:"),2,0)
         grid.addWidget(date,2,1)
 
-        grid.addWidget(QtWidgets.QLabel("Timestamp:"),3,0)
-        grid.addWidget(timestamp,3,1)
+        grid.addWidget(QtWidgets.QLabel("Timestamp:"),2,2)
+        grid.addWidget(timestamp,2,3)
 
-        grid.addWidget(QtWidgets.QLabel("xRunNumber:"),4,0)
-        grid.addWidget(xRunNumber,4,1)
+        grid.addWidget(QtWidgets.QLabel("xRunNumber:"),3,0)
+        grid.addWidget(xRunNumber,3,1)
 
-        grid.addWidget(QtWidgets.QLabel("yRunNumber:"),5,0)
-        grid.addWidget(yRunNumber,5,1)
+        grid.addWidget(QtWidgets.QLabel("yRunNumber:"),3,2)
+        grid.addWidget(yRunNumber,3,3)
 
-        grid.addWidget(QtWidgets.QLabel("Notes:"),6,0)
-        grid.addWidget(notes,6,1,8,1)
+        grid.addWidget(QtWidgets.QLabel("Notes:"),4,0)
+        grid.addWidget(notes,4,1,8,3)
 
         '''
         Add the grid to the main window
