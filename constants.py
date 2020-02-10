@@ -1,0 +1,2 @@
+MAX_RUN_RANGE  = 200
+MAX_FIXED_WITH = 150 #pixels
