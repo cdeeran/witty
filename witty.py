@@ -1,5 +1,6 @@
 import sys
 import constants
+import dataManager
 from PyQt5 import QtWidgets,QtCore,QtGui
 
 class WittyGui(QtWidgets.QMainWindow):
@@ -12,6 +13,11 @@ class WittyGui(QtWidgets.QMainWindow):
         '''
         super().__init__()
         self.mainWindow()
+        self.DataManager = dataManager.DataManager()
+        '''
+        TODO: Add correct logic to create a new dataframe
+        '''
+        self.DataManager.newCsv()
 
     def mainWindow(self):
         '''
@@ -170,12 +176,21 @@ class WittyGui(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.critical(self,"Error!","ERROR: No scenario entered! Try Again!")
             self.errorOnSave = True
         else:
-            print("Scenario: {}".format(self.scenario.text()))
-            print("Date: {}".format(self.date.text()))
-            print("Timestamp: {}".format(self.timestamp.text()))
-            print("xRunNumber: {}".format(self.xRunNumber.value()))
-            print("yRunNumber: {}".format(self.yRunNumber.value()))
-            print("Notes: {}".format(self.notes.toPlainText()))
+            '''
+            Create a temp dictionary to pass to the data manager
+            '''
+            entryDictionary = {constants.COLUMN_NAMES[0]:self.date.text()}
+            entryDictionary.update({constants.COLUMN_NAMES[1]:self.timestamp.text()})
+            entryDictionary.update({constants.COLUMN_NAMES[2]:self.scenario.text()})
+            entryDictionary.update({constants.COLUMN_NAMES[3]:self.xRunNumber.value()})
+            entryDictionary.update({constants.COLUMN_NAMES[4]:self.yRunNumber.value()})
+            entryDictionary.update({constants.COLUMN_NAMES[5]:self.notes.toPlainText()})
+            entryDictionary.update({constants.COLUMN_NAMES[6]:""}) # Qualifed entry will be updated by the user manually
+
+            '''
+            Pass the data to the data manager to save
+            '''
+            self.DataManager.save(entryDictionary)
             self.entrySaved = True
         
     def newEntry(self):
@@ -204,8 +219,8 @@ class WittyGui(QtWidgets.QMainWindow):
             Create a new entry as long as an error
             did not occur while saving
             '''
-            self.scenario.setText(None)
-            self.notes.setText(None)
+            self.scenario.setText("")
+            self.notes.setText("")
             self.xRunNumber.setValue(self.xRunNumber.value() + 1)
             self.yRunNumber.setValue(self.yRunNumber.value() + 1)
             self.date.setDate(QtCore.QDate.currentDate())
@@ -231,5 +246,5 @@ if __name__ == "__main__":
     Exit application when the X is pressed
     '''
     app = QtWidgets.QApplication(sys.argv)
-    gui = WittyGui() # May throw 'unused' warning. No need to worry.
+    gui = WittyGui()
     sys.exit(app.exec_())
