@@ -35,3 +35,9 @@ class DataManager():
         Save the data to the csv file
         '''
         self.dataFrame.to_csv(r'{}'.format(path),index=None,header=True)
+
+    def open(self,path):
+        '''
+        Read the csv from selected path
+        '''
+        self.dataFrame = pd.read_csv(r'{}'.format(path))

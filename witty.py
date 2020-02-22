@@ -1,8 +1,8 @@
 import sys
-import os
 import constants
 import dataManager
 from PyQt5 import QtWidgets,QtCore,QtGui
+from datetime import datetime
 
 class WittyGui(QtWidgets.QMainWindow):
     '''
@@ -15,10 +15,6 @@ class WittyGui(QtWidgets.QMainWindow):
         super().__init__()
         self.mainWindow()
         self.DataManager = dataManager.DataManager()
-        '''
-        TODO: Add correct logic to create a new dataframe
-        '''
-        self.DataManager.newCsv()
 
     def mainWindow(self):
         '''
@@ -53,14 +49,18 @@ class WittyGui(QtWidgets.QMainWindow):
         '''
         Create the date and timestamp logging fields
         '''
-        self.date = QtWidgets.QDateTimeEdit(QtCore.QDate.currentDate())
+        currentDate = datetime.now()
+
+        self.date = QtWidgets.QLineEdit()
+        self.date.setText(currentDate.strftime("%Y-%m-%d"))
+        self.date.setReadOnly(True)
         self.date.setFixedWidth(constants.MAX_FIXED_WITH)
-        self.date.setDisplayFormat("yyyy-MM-dd")
-
-        self.timestamp = QtWidgets.QDateTimeEdit(QtCore.QDateTime.currentDateTimeUtc())
+        
+        self.timestamp = QtWidgets.QLineEdit()
+        self.timestamp.setText(currentDate.strftime("%H:%M:%S"))
+        self.timestamp.setReadOnly(True)
         self.timestamp.setFixedWidth(constants.MAX_FIXED_WITH)
-        self.timestamp.setDisplayFormat("HH:mm:ss")
-
+        
         '''
         Create the grid layout of the GUI
         '''
@@ -135,7 +135,7 @@ class WittyGui(QtWidgets.QMainWindow):
         '''
         Add the save option
         '''
-        toolBar.addAction(self.createAction('Open',self.actionClicked,'Open the file to use'))
+        toolBar.addAction(self.createAction('Open',self.openFile,'Open the file to use'))
 
         return toolBar
 
@@ -194,9 +194,14 @@ class WittyGui(QtWidgets.QMainWindow):
             entryDictionary.update({constants.COLUMN_NAMES[6]:""}) 
 
             '''
-            Pass the data to the data manager to save
+            If this is a new file create the new csv and prompt the user
+            where they would like to save the file and then pass the 
+            data from the entry to the data manager.
+
+            Otherwise just pass the data from the entry to the data manager
             '''
             if self.firstTimeSaved == True:
+                self.DataManager.newCsv()
                 options      = QtWidgets.QFileDialog.Options()
                 options     |= QtWidgets.QFileDialog.DontUseNativeDialog
                 self.file, _ = QtWidgets.QFileDialog.getSaveFileName(self,"Select save location","",
@@ -236,26 +241,53 @@ class WittyGui(QtWidgets.QMainWindow):
             Create a new entry as long as an error
             did not occur while saving
             '''
+            currentDate = datetime.now()
+            self.date.setText(currentDate.strftime("%Y-%m-%d"))
+            self.timestamp.setText(currentDate.strftime("%H:%M:%S"))
             self.scenario.setText("")
             self.notes.setText("")
             self.xRunNumber.setValue(self.xRunNumber.value() + 1)
             self.yRunNumber.setValue(self.yRunNumber.value() + 1)
-            self.date.setDate(QtCore.QDate.currentDate())
-            self.timestamp.setDateTime(QtCore.QDateTime.currentDateTimeUtc())
             self.entrySaved = False
+
+    def openFile(self):
+        '''
+        Open the OS file explorer window for the user to navigate to the file
+        they would like to open
+        '''
+        options      = QtWidgets.QFileDialog.Options()
+        options     |= QtWidgets.QFileDialog.DontUseNativeDialog
+        self.file, _ = QtWidgets.QFileDialog.getOpenFileName(self,"Select file to open location","",
+                        "comma-separated values (*.csv)", options=options)
+
+        if self.file != "":
+            self.DataManager.open(self.file)
+            self.firstTimeSaved = False
         else:
             '''
-            Let the user know that the new entry was not created
-            #TODO: Evaluate if this is needed or is too redunant
+            Create a custom message box for a better user experience
+            handling this question
             '''
-            QtWidgets.QMessageBox.information(self,"New Entry Failed",
-            "New entry was not created to do an error while trying to save")
+            openFilePrompt = QtWidgets.QMessageBox()
+            openFilePrompt.setIcon(QtWidgets.QMessageBox.Warning)
+            messageText = "You did not select a file to open!\n\n" + \
+                          "If you have a file already loaded we will continue using that one.\n\n" + \
+                          "If you do not have a file currently open, we will create a new one.\n\n" + \
+                          "How do you want to proceed?"
+            openFilePrompt.setText(messageText)
+            openFilePrompt.addButton('Open a file',QtWidgets.QMessageBox.YesRole)
+            openFilePrompt.addButton('Use new/existing file',QtWidgets.QMessageBox.NoRole)
+            
+            '''
+            Display prompt and store reply
+            '''
+            userReply = openFilePrompt.exec_()
 
-    def actionClicked(self):
-        '''
-        #TODO: Debug function! Remove!
-        '''
-        print("Action Clicked!")
+            if userReply == QtWidgets.QMessageBox.Yes:
+                '''
+                Save the current entry
+                '''
+                self.openFile()
 
 if __name__ == "__main__":
     '''
