@@ -19,8 +19,19 @@ class DataManager():
         '''
         self.dataFrame = pd.DataFrame(columns=constants.COLUMN_NAMES)
 
-    def save(self,data):
+    def save(self,data,path):
         '''
         Append the new data to the dataframe
         '''
         self.dataFrame = self.dataFrame.append(data,ignore_index=True)
+
+        '''
+        Check is .csv is the file extension
+        '''
+        if path[-4:].lower() != ".csv":
+            path = path + ".csv"
+
+        '''
+        Save the data to the csv file
+        '''
+        self.dataFrame.to_csv(r'{}'.format(path),index=None,header=True)

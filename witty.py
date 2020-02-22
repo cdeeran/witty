@@ -1,4 +1,5 @@
 import sys
+import os
 import constants
 import dataManager
 from PyQt5 import QtWidgets,QtCore,QtGui
@@ -27,8 +28,10 @@ class WittyGui(QtWidgets.QMainWindow):
         self.setWindowTitle("Witty")
         self.center()
         self.addToolBar(self.createToolbar())
-        self.entrySaved  = False
-        self.errorOnSave = False
+        self.entrySaved     = False
+        self.errorOnSave    = False
+        self.firstTimeSaved = True
+        self.file           = ""
 
         '''
         Create the edit boxes
@@ -185,14 +188,28 @@ class WittyGui(QtWidgets.QMainWindow):
             entryDictionary.update({constants.COLUMN_NAMES[3]:self.xRunNumber.value()})
             entryDictionary.update({constants.COLUMN_NAMES[4]:self.yRunNumber.value()})
             entryDictionary.update({constants.COLUMN_NAMES[5]:self.notes.toPlainText()})
-            entryDictionary.update({constants.COLUMN_NAMES[6]:""}) # Qualifed entry will be updated by the user manually
+            '''
+            Qualifed entry will be updated by the user manually
+            '''
+            entryDictionary.update({constants.COLUMN_NAMES[6]:""}) 
 
             '''
             Pass the data to the data manager to save
             '''
-            self.DataManager.save(entryDictionary)
-            self.entrySaved = True
-        
+            if self.firstTimeSaved == True:
+                options      = QtWidgets.QFileDialog.Options()
+                options     |= QtWidgets.QFileDialog.DontUseNativeDialog
+                self.file, _ = QtWidgets.QFileDialog.getSaveFileName(self,"Select save location","",
+                                "comma-separated values (*.csv)", options=options)
+
+                if self.file != "":
+                    self.DataManager.save(entryDictionary,self.file)
+                    self.entrySaved     = True
+                    self.firstTimeSaved = False
+            else:
+                self.DataManager.save(entryDictionary,self.file)
+                self.entrySaved = True
+
     def newEntry(self):
         '''
         Clear the current contents and update the 
