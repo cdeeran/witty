@@ -1,5 +1,5 @@
 # Witty
-Multithreaded GUI applicaiton
+
 
 ## Tools
 [Visual Studio Code - 1.x](https://code.visualstudio.com/Download)</br>
