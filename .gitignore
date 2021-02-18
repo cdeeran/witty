@@ -131,3 +131,5 @@ dmypy.json
 
 # Personal ignores
 .vscode
+.DS_Store
+data/
