@@ -135,19 +135,19 @@ class WittyGui(QtWidgets.QMainWindow):
         Add the save option
         '''
         toolBar.addAction(self.createAction(
-            'Save', self.saveEntry, 'Save the data to csv'))
+            'Save', self.saveEntry, 'Save the entry to csv'))
 
         '''
         Add the new option
         '''
         toolBar.addAction(self.createAction(
-            'New', self.newEntry, 'Create a new file'))
+            'New', self.newEntry, 'Create a new entry'))
 
         '''
         Add the save option
         '''
         toolBar.addAction(self.createAction(
-            'Open', self.openFile, 'Open the file to use'))
+            'Open', self.openFile, 'Open a csv data file to use'))
 
         return toolBar
 
@@ -226,17 +226,23 @@ class WittyGui(QtWidgets.QMainWindow):
                 filepath, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Select save location", constants.DATA_PATH,
                                                                     "comma-separated values (*.csv)", options=options)
 
+                '''
+                Determine if the use canceled the dialog by the contents of the file path.
+                '''
                 filepath = None if filepath == "." or filepath == "" or filepath == None else filepath
+
                 if filepath:
                     filepath = Path(filepath)
                     self.dataManager.save(entryDictionary, filepath)
                     self.statusBar.showMessage(
                         f'New file {filepath.name} saved!', constants.STATUS_BAR_TIMEOUT)
-                    self.workingFile.setText(self.dataManager.getFilePath())
+                    self.workingFile.setText(self.dataManager.getFile())
+                    self.workingFile.setStatusTip(
+                        str(self.dataManager.getFilePath()))
                     self.newEntry()
             else:
                 self.dataManager.save(
-                    entryDictionary, self.dataManager.getFilePath())
+                    entryDictionary, self.dataManager.getFile())
                 self.statusBar.showMessage(
                     "Entry Saved!", constants.STATUS_BAR_TIMEOUT)
                 self.newEntry()
@@ -286,6 +292,9 @@ class WittyGui(QtWidgets.QMainWindow):
         filepath, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select file to open location", constants.DATA_PATH,
                                                             "comma-separated values (*.csv)", options=options)
 
+        '''
+        Determine if the filepath is useable
+        '''
         filepath = None if filepath == "." or filepath == "" or filepath == None else filepath
 
         if filepath:
@@ -296,8 +305,8 @@ class WittyGui(QtWidgets.QMainWindow):
             data = self.dataManager.getDataframe()
             self.xRunNumber.setValue(int(data.iloc[-1]["XRUNNUMBER"]) + 1)
             self.yRunNumber.setValue(int(data.iloc[-1]["YRUNNUMBER"]) + 1)
-
-            self.workingFile.setText(str(self.dataManager.getFilePath()))
+            self.workingFile.setText(str(self.dataManager.getFile()))
+            self.workingFile.setStatusTip(str(self.dataManager.getFilePath()))
             self.statusBar.showMessage(f'Loaded file {filepath.name}', 500)
 
         else:
