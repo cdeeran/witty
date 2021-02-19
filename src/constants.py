@@ -4,3 +4,4 @@ COLUMN_NAMES = ["DATE", "TIMESTAMP", "SCENARIO",
                 "XRUNNUMBER", "YRUNNUMBER", "DATA PATH", "NOTES", "QUALIFIED"]
 DATA_PATH = "../data"
 EXTENSION = ".csv"
+STATUS_BAR_TIMEOUT = 2000  # 2 seconds. Unit of measurement is in milliseconds

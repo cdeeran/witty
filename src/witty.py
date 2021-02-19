@@ -34,6 +34,8 @@ class WittyGui(QtWidgets.QMainWindow):
         '''
         self.scenario = QtWidgets.QLineEdit()
         self.notes = QtWidgets.QTextEdit()
+        self.workingFile = QtWidgets.QLabel()
+        self.workingFile.setText("No file loaded")
 
         '''
         Create the run number dropdowns
@@ -61,6 +63,9 @@ class WittyGui(QtWidgets.QMainWindow):
         self.timestamp.setReadOnly(True)
         self.timestamp.setFixedWidth(constants.MAX_FIXED_WITH)
 
+        self.statusBar = QtWidgets.QStatusBar()
+        self.setStatusBar(self.statusBar)
+
         '''
         Create the grid layout of the GUI
         '''
@@ -87,6 +92,9 @@ class WittyGui(QtWidgets.QMainWindow):
 
         self.grid.addWidget(QtWidgets.QLabel("Notes:"), 4, 0)
         self.grid.addWidget(self.notes, 4, 1, 6, 3)
+
+        self.grid.addWidget(QtWidgets.QLabel("Working File:"), 15, 0)
+        self.grid.addWidget(self.workingFile, 15, 1)
 
         '''
         Add the grid to the main window
@@ -222,10 +230,15 @@ class WittyGui(QtWidgets.QMainWindow):
                 if filepath:
                     filepath = Path(filepath)
                     self.dataManager.save(entryDictionary, filepath)
+                    self.statusBar.showMessage(
+                        f'New file {filepath.name} saved!', constants.STATUS_BAR_TIMEOUT)
+                    self.workingFile.setText(self.dataManager.getFilePath())
                     self.newEntry()
             else:
                 self.dataManager.save(
                     entryDictionary, self.dataManager.getFilePath())
+                self.statusBar.showMessage(
+                    "Entry Saved!", constants.STATUS_BAR_TIMEOUT)
                 self.newEntry()
 
     def newEntry(self):
@@ -283,6 +296,9 @@ class WittyGui(QtWidgets.QMainWindow):
             data = self.dataManager.getDataframe()
             self.xRunNumber.setValue(int(data.iloc[-1]["XRUNNUMBER"]) + 1)
             self.yRunNumber.setValue(int(data.iloc[-1]["YRUNNUMBER"]) + 1)
+
+            self.workingFile.setText(str(self.dataManager.getFilePath()))
+            self.statusBar.showMessage(f'Loaded file {filepath.name}', 500)
 
         else:
             '''

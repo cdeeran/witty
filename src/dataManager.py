@@ -17,17 +17,16 @@ class DataManager():
         '''
         Initialize the datafame to None
         '''
-        self._dataFrame = None
-        self._fileInUse = None
-        self._entrySaved = False
-        self._errorOnSave = False
-        self._firstTimeSaved = True
-        self._file = ""
-        self._filePath = ""
-        self._dataQueue = Queue()
-        self._killThread = False
-        self._workerThread = Thread(
-            target=self.processQueue)
+        self._dataFrame: pd.DataFrame = None
+        self._fileInUse: bool = None
+        self._entrySaved: bool = False
+        self._errorOnSave: bool = False
+        self._firstTimeSaved: bool = True
+        self._file: Path = Path("")
+        self._filePath: Path = Path("")
+        self._dataQueue: Queue = Queue()
+        self._killThread: bool = False
+        self._workerThread: Thread = Thread(target=self.processQueue)
         self._workerThread.setDaemon(True)
         self._workerThread.start()
 
@@ -45,6 +44,7 @@ class DataManager():
             time.sleep(5)
 
     def killWorkerThread(self):
+        print("Waiting for current task to finish...")
         self._killThread = True
         self._workerThread.join()
 
@@ -100,7 +100,7 @@ class DataManager():
         '''
         Save the data to the csv file
         '''
-        if path.name[-4:] == constants.EXTENSION:
+        if constants.EXTENSION in path.name:
             self.getDataframe().to_csv(
                 f'{path.resolve()}', index=None, header=True)
         else:
@@ -110,12 +110,11 @@ class DataManager():
         self.setEntrySaved(True)
 
         if self.getFirstTimeSaved() == True:
+            self.setFilePath(path)
+            self.setFile(f'{path.name}{constants.EXTENSION}')
             self.setFirstTimeSaved(False)
 
         command = f'/Users/codydeeran/Documents/witty/utils/test_script.py'
-        self.addToQueue(command)
-        self.addToQueue(command)
-        self.addToQueue(command)
         self.addToQueue(command)
 
     def open(self, path: Path):
